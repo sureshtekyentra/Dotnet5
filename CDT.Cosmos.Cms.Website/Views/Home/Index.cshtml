@@ -1,0 +1,18 @@
+﻿@model CDT.Cosmos.Cms.Common.Models.ArticleViewModel
+@*
+This is a basic layout for a C/CMS page.    
+*@
+@{
+    Layout = "_CosmosLayout";
+    ViewData["Title"] = Model.Title;
+}
+@if (string.IsNullOrEmpty(Model.CacheKey))
+{
+    @Html.Raw(Model.Content)
+}
+else
+{
+    <distributed-cache name="@Model.CacheKey," expires-after="@(TimeSpan.FromSeconds(Model.CacheDuration))">
+        @Html.Raw(Model.Content)
+    </distributed-cache>
+}
