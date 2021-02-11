@@ -1,9 +1,12 @@
 using System;
 using System.Security.Authentication;
+using System.Text;
 using CDT.Cosmos.Cms.Common.Data;
+using CDT.Cosmos.Cms.Common.Data.Logic;
 using CDT.Cosmos.Cms.Common.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
@@ -30,7 +33,8 @@ namespace CDT.Cosmos.Cms.Website
             //  Start C/CMS Publisher Website required items
             //
             services.Configure<SiteCustomizationsConfig>(Configuration.GetSection("SiteCustomizations"));
-            var redisSection = Configuration.GetSection("RedisContextConfig");
+            services.Configure<GoogleCloudAuthConfig>(Configuration.GetSection("GoogleCloudAuthConfig"));
+            services.Configure<AuthMessageSenderOptions>(Configuration.GetSection("AuthMessageSenderOptions"));
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
@@ -38,10 +42,6 @@ namespace CDT.Cosmos.Cms.Website
             //
             // End C/CMS required section
             //
-
-            // For ResettaStone
-            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS",
-                "CA-Response-Portal-bfc617b86937.json");
 
             services.ConfigureApplicationCookie(o =>
             {
@@ -52,27 +52,33 @@ namespace CDT.Cosmos.Cms.Website
             services.AddControllersWithViews();
 
             //
-            //  Start C/CMS Publisher Website required items
             // Implement REDIS and distributed caching only if configured.
             //
-            if (redisSection == null) return;
-
-            //https://docs.microsoft.com/en-us/aspnet/core/performance/caching/middleware?view=aspnetcore-3.1
-            var redisContext = redisSection.Get<RedisContextConfig>();
-
-            services.Configure<RedisContextConfig>(redisSection);
-            var redisOptions = new ConfigurationOptions
+            var redisSection = Configuration.GetSection("RedisContextConfig");
+            if (redisSection != null)
             {
-                Password = redisContext.Password,
-                Ssl = true,
-                SslProtocols = SslProtocols.Tls12,
-                AbortOnConnectFail = redisContext.AbortConnect
-            };
-            redisOptions.EndPoints.Add(redisContext.Host, 6380);
-            redisOptions.ConnectTimeout = 2000;
-            redisOptions.ConnectRetry = 3;
-            services.AddStackExchangeRedisCache(options => { options.ConfigurationOptions = redisOptions; });
-            services.AddResponseCaching(options => { options.UseCaseSensitivePaths = false; });
+                //https://docs.microsoft.com/en-us/aspnet/core/performance/caching/middleware?view=aspnetcore-3.1
+                var redisContext = redisSection.Get<RedisContextConfig>();
+
+                services.Configure<RedisContextConfig>(redisSection);
+                var redisOptions = new ConfigurationOptions
+                {
+                    Password = redisContext.Password,
+                    Ssl = true,
+                    SslProtocols = SslProtocols.Tls12,
+                    AbortOnConnectFail = redisContext.AbortConnect
+                };
+                redisOptions.EndPoints.Add(redisContext.Host, 6380);
+                redisOptions.ConnectTimeout = 2000;
+                redisOptions.ConnectRetry = 3;
+                services.AddStackExchangeRedisCache(options => { options.ConfigurationOptions = redisOptions; });
+                services.AddResponseCaching(options => { options.UseCaseSensitivePaths = false; });
+            }
+
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.AddTransient<RedisCacheService>();
+            services.AddTransient<TranslationServices>();
+            services.AddTransient<ArticleLogic>();
 
             services.AddMvc()
                 .AddNewtonsoftJson(options =>
@@ -109,7 +115,7 @@ namespace CDT.Cosmos.Cms.Website
                 {
                     var options = new DistributedCacheEntryOptions();
                     //var redisCache = (Microsoft.Extensions.Caching.StackExchangeRedis.RedisCache)cache;
-                    cache.Set("cachedTimeUTC", System.Text.Encoding.UTF8.GetBytes(DateTime.UtcNow.ToString("u")), options);
+                    cache.Set("cachedTimeUTC", Encoding.UTF8.GetBytes(DateTime.UtcNow.ToString("u")), options);
                 });
 
             //https://docs.microsoft.com/en-us/aspnet/core/performance/caching/middleware?view=aspnetcore-3.1

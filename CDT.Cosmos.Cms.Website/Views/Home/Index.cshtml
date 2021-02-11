@@ -12,7 +12,7 @@ This is a basic layout for a C/CMS page.
 }
 else
 {
-    <distributed-cache name="@Model.CacheKey," expires-after="@(TimeSpan.FromSeconds(Model.CacheDuration))">
+    <distributed-cache name="@Model.CacheKey," expires-after="@TimeSpan.FromSeconds(Model.CacheDuration)">
         @Html.Raw(Model.Content)
     </distributed-cache>
 }

@@ -1,9 +1,8 @@
 ﻿using CDT.Cosmos.Cms.Common.Controllers;
-using CDT.Cosmos.Cms.Common.Data;
+using CDT.Cosmos.Cms.Common.Data.Logic;
 using CDT.Cosmos.Cms.Common.Services;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -12,11 +11,9 @@ namespace CDT.Cosmos.Cms.Website.Controllers
     public class HomeController : CosmosController
     {
         public HomeController(ILogger<HomeController> logger,
-            ApplicationDbContext dbContext,
-            IOptions<SiteCustomizationsConfig> customizations,
-            IDistributedCache distributedCache,
-            IOptions<RedisContextConfig> redisOptions) : base(logger, dbContext, customizations, distributedCache,
-            redisOptions)
+            ArticleLogic articleLogic,
+            IOptions<RedisContextConfig> redisOptions) :
+            base(logger, articleLogic, redisOptions)
         {
         }
 
