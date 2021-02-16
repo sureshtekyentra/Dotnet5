@@ -12,8 +12,9 @@ namespace CDT.Cosmos.Cms.Website.Controllers
     {
         public HomeController(ILogger<HomeController> logger,
             ArticleLogic articleLogic,
-            IOptions<RedisContextConfig> redisOptions) :
-            base(logger, articleLogic, redisOptions)
+            IOptions<RedisContextConfig> redisOptions,
+            IOptions<GoogleCloudAuthConfig> gglOptions) :
+            base(logger, articleLogic: articleLogic, redisOptions, gglOptions)
         {
         }
 
