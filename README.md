@@ -1,7 +1,7 @@
 # [Cosmos CMS (Publisher)](https://cosmos.azureedge.net)
 
 [![License: MIT](https://img.shields.io/static/v1?label=License&message=MIT&color=brightgreen)](https://github.com/StateOfCalifornia/CosmosCMS.Publisher/edit/main/LICENSE.md)  [![Build Status](https://dev.azure.com/CalEnterprise/CDT.Cosmos.Cms/_apis/build/status/Source-GitHub%20CosmosCMS.Publisher?branchName=main)](https://dev.azure.com/CalEnterprise/CDT.Cosmos.Cms/_build/latest?definitionId=571&branchName=main) 
-[![Board Status](https://dev.azure.com/CalEnterprise/a7ab809f-6843-401d-962e-130106405388/dcd608b7-7c08-4e48-8863-83d649e2e1df/_apis/work/boardbadge/82ea9a1e-2fcd-4973-8898-080c0556e997)](https://dev.azure.com/calenterprise/a7ab809f-6843-401d-962e-130106405388/_boards/board/t/dcd608b7-7c08-4e48-8863-83d649e2e1df/Microsoft.RequirementCategory/)
+[![Board Status](https://dev.azure.com/CalEnterprise/a7ab809f-6843-401d-962e-130106405388/dcd608b7-7c08-4e48-8863-83d649e2e1df/_apis/work/boardbadge/82ea9a1e-2fcd-4973-8898-080c0556e997)](https://dev.azure.com/calenterprise/a7ab809f-6843-401d-962e-130106405388/_boards/board/t/dcd608b7-7c08-4e48-8863-83d649e2e1df/Microsoft.RequirementCategory/) [![CDT.Cosmos.Cms.Common on fuget.org](https://www.fuget.org/packages/CDT.Cosmos.Cms.Common/badge.svg)](https://www.fuget.org/packages/CDT.Cosmos.Cms.Common)
 
 Cosmos CMS (C/CMS) is a ASP.NET Core (v.5) hybrid [Web Content Management System](https://en.wikipedia.org/wiki/Web_content_management_system). It is a "[hybrid](https://en.wikipedia.org/wiki/Mashup_(web_application_hybrid))" because of it's extremely open architecture that allows for you to mashup this CMS with your own functionality and integrations.
 
