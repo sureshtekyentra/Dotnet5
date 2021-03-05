@@ -17,39 +17,51 @@ using StackExchange.Redis;
 
 namespace CDT.Cosmos.Cms.Website
 {
+    /// <summary>
+    /// Startup class for the website.
+    /// </summary>
     public class Startup
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="configuration"></param>
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
+        /// <summary>
+        /// Configuration for the website.
+        /// </summary>
         public IConfiguration Configuration { get; }
 
+        /// <summary>
+        /// Method configures services for the website.
+        /// </summary>
+        /// <param name="services"></param>
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             //
-            //  Start C/CMS Publisher Website required items
+            // Get configurations
             //
             services.Configure<SiteCustomizationsConfig>(Configuration.GetSection("SiteCustomizations"));
-            services.Configure<GoogleCloudAuthConfig>(Configuration.GetSection("GoogleCloudAuthConfig"));
             services.Configure<AuthMessageSenderOptions>(Configuration.GetSection("AuthMessageSenderOptions"));
+            services.Configure<GoogleCloudAuthConfig>(Configuration.GetSection("GoogleCloudAuthConfig"));
+          
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            //
-            // End C/CMS required section
-            //
 
+            // https://docs.microsoft.com/en-us/aspnet/core/security/authentication/accconfirm?view=aspnetcore-3.1&tabs=visual-studio
             services.ConfigureApplicationCookie(o =>
             {
                 o.ExpireTimeSpan = TimeSpan.FromDays(5);
                 o.SlidingExpiration = true;
             });
 
-            services.AddControllersWithViews();
 
             //
             // Implement REDIS and distributed caching only if configured.
@@ -70,7 +82,7 @@ namespace CDT.Cosmos.Cms.Website
                 };
                 redisOptions.EndPoints.Add(redisContext.Host, 6380);
                 redisOptions.ConnectTimeout = 2000;
-                redisOptions.ConnectRetry = 3;
+                redisOptions.ConnectRetry = 5;
                 services.AddStackExchangeRedisCache(options => { options.ConfigurationOptions = redisOptions; });
                 services.AddResponseCaching(options => { options.UseCaseSensitivePaths = false; });
             }
@@ -80,16 +92,88 @@ namespace CDT.Cosmos.Cms.Website
             services.AddTransient<TranslationServices>();
             services.AddTransient<ArticleLogic>();
 
+            // Add this before identity
+            services.AddControllersWithViews();
+            services.AddRazorPages();
+
+            // End before identity
+
+            // See: https://docs.microsoft.com/en-us/aspnet/core/security/authentication/accconfirm?view=aspnetcore-3.1&tabs=visual-studio
+            // And see: https://stackoverflow.com/questions/46320189/asp-net-core-2-unable-to-resolve-service-for-type-microsoft-entityframeworkcore
+            // requires
+            // using Microsoft.AspNetCore.Identity.UI.Services;
+            // using WebPWrecover.Services;
+            // Setup SendGrid as EmailSender: https://docs.microsoft.com/en-us/aspnet/core/security/authentication/accconfirm?view=aspnetcore-3.1&tabs=visual-studio
+            // requires
+            // using Microsoft.AspNetCore.Identity.UI.Services;
+            // using WebPWrecover.Services;
+
+            var authConfig = Configuration.GetSection("Authentication");
+            var config = authConfig.Get<AuthenticationConfig>();
+            services.Configure<AuthenticationConfig>(Configuration.GetSection("Authentication"));
+
+            // https://forums.asp.net/t/2130410.aspx?Roles+and+RoleManager+in+ASP+NET+Core+2
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+                {
+                    options.SignIn.RequireConfirmedAccount = true;
+                })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddUserManager<UserManager<IdentityUser>>()
+                .AddRoleManager<RoleManager<IdentityRole>>()
+                .AddDefaultTokenProviders();
+
+            //
+            // Configure authentication providers.
+            //
+            if (config.Microsoft != null && !string.IsNullOrEmpty(config.Microsoft.ClientId))
+                // Microsoft
+                services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
+                {
+                    // Microsoft https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/microsoft-logins?view=aspnetcore-3.1
+                    microsoftOptions.ClientId = config.Microsoft.ClientId;
+                    microsoftOptions.ClientSecret = config.Microsoft.ClientSecret;
+                });
+
+            if (config.Google != null && !string.IsNullOrEmpty(config.Google.ClientId))
+                services.AddAuthentication()
+                    .AddGoogle(options =>
+                    {
+                        // Google https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/google-logins?view=aspnetcore-3.1#create-a-google-api-console-project-and-client-id
+                        // Dashboard https://console.developers.google.com/projectselector2/apis/dashboard?authuser=0&organizationId=0&supportedpurview=project
+                        // On dashboard, on menu left, click "Credentials." It will be one of the "Oauth" settings.
+
+                        options.ClientId = config.Google.ClientId;
+                        options.ClientSecret = config.Google.ClientSecret;
+                    });
             services.AddMvc()
                 .AddNewtonsoftJson(options =>
                     options.SerializerSettings.ContractResolver =
-                        new DefaultContractResolver());
-            //
-            // End C/CMS required section
-            //
+                        new DefaultContractResolver())
+                .SetCompatibilityVersion(CompatibilityVersion.Latest)
+                .AddRazorPagesOptions(options =>
+                {
+                    // This section docs are here: https://docs.microsoft.com/en-us/aspnet/core/security/authentication/scaffold-identity?view=aspnetcore-3.1&tabs=visual-studio#full
+                    //options.AllowAreas = true;
+                    options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
+                    options.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
+                });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                // This section docs are here: https://docs.microsoft.com/en-us/aspnet/core/security/authentication/scaffold-identity?view=aspnetcore-3.1&tabs=visual-studio#full
+                options.LoginPath = "/Identity/Account/Login";
+                options.LogoutPath = "/Identity/Account/Logout";
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+            });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="env"></param>
+        /// <param name="lifetime"></param>
+        /// <param name="cache"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime,
             IDistributedCache cache)
         {
@@ -121,24 +205,22 @@ namespace CDT.Cosmos.Cms.Website
             //https://docs.microsoft.com/en-us/aspnet/core/performance/caching/middleware?view=aspnetcore-3.1
             app.UseResponseCaching();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
+                    "MyArea",
+                    "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
                     "default",
                     "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
 
                 // This route must go last.  A page name can't conflict with any of the above.
                 // This route allows page titles to become URLs.
-                endpoints.MapControllerRoute(
-                    "DynamicPage",
-                    "/{id?}/{lang?}",
-                    new
-                    {
-                        controller = "Home",
-                        action = "Index"
-                    });
+                endpoints.MapControllerRoute("DynamicPage", "/{id?}/{lang?}", new { controller = "Home", action = "Index" });
             });
         }
     }
