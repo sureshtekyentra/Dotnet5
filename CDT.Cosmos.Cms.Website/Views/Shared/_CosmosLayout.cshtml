@@ -22,9 +22,23 @@
     @Html.Raw(Model.Layout.PostFooterBlock)
 <script>
     @Html.Raw(Model.FooterJavaScript)
-    
-    var identityUser = @(Html.Raw(ViewData["RBAC"]))
 
+    var userRoles = @(Html.Raw(ViewData["CCMS-RBAC"]));
+
+    if (userRoles.length > 0) {
+        $(document).ready(function() {
+            $('[name="data-ccms-roles"]').each(function (index) {
+                var elem = this;
+                $(userRoles).each(function(inner) {
+                    if (elem.attr("data-ccms-roles").contains(userRoles[inner])) {
+                        elem.show();
+                    } else {
+                        elem.hide();
+                    }
+                });
+            });
+        });
+    }
 </script>
 <!-- Comment out the following if not using Google Translate v3 -->
 @if (ViewData["UseGoogleTranslate"] != null && (bool)ViewData["UseGoogleTranslate"])
