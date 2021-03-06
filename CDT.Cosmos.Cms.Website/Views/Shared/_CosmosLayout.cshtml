@@ -5,7 +5,7 @@
     @Html.Raw(Model.Layout.Head)
     <title>@Model.Title</title>
     <script>
-    @Html.Raw(Model.HeaderJavaScript)
+        @Html.Raw(Model.HeaderJavaScript)
     </script>
 </head>
 <body>
@@ -21,7 +21,10 @@
     @(await RenderSectionAsync("Scripts", false))
     @Html.Raw(Model.Layout.PostFooterBlock)
 <script>
-@Html.Raw(Model.FooterJavaScript)
+    @Html.Raw(Model.FooterJavaScript)
+    
+    var identityUser = @(Html.Raw(ViewData["RBAC"]))
+
 </script>
 <!-- Comment out the following if not using Google Translate v3 -->
 @if (ViewData["UseGoogleTranslate"] != null && (bool)ViewData["UseGoogleTranslate"])

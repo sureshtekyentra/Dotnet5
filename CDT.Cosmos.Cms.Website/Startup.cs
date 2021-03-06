@@ -6,7 +6,9 @@ using CDT.Cosmos.Cms.Common.Data.Logic;
 using CDT.Cosmos.Cms.Common.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
@@ -49,11 +51,12 @@ namespace CDT.Cosmos.Cms.Website
             services.Configure<SiteCustomizationsConfig>(Configuration.GetSection("SiteCustomizations"));
             services.Configure<AuthMessageSenderOptions>(Configuration.GetSection("AuthMessageSenderOptions"));
             services.Configure<GoogleCloudAuthConfig>(Configuration.GetSection("GoogleCloudAuthConfig"));
-          
+            var authConfig = Configuration.GetSection("Authentication");
+            var config = authConfig.Get<AuthenticationConfig>();
+            services.Configure<AuthenticationConfig>(Configuration.GetSection("Authentication"));
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             // https://docs.microsoft.com/en-us/aspnet/core/security/authentication/accconfirm?view=aspnetcore-3.1&tabs=visual-studio
             services.ConfigureApplicationCookie(o =>
@@ -61,7 +64,6 @@ namespace CDT.Cosmos.Cms.Website
                 o.ExpireTimeSpan = TimeSpan.FromDays(5);
                 o.SlidingExpiration = true;
             });
-
 
             //
             // Implement REDIS and distributed caching only if configured.
@@ -108,9 +110,6 @@ namespace CDT.Cosmos.Cms.Website
             // using Microsoft.AspNetCore.Identity.UI.Services;
             // using WebPWrecover.Services;
 
-            var authConfig = Configuration.GetSection("Authentication");
-            var config = authConfig.Get<AuthenticationConfig>();
-            services.Configure<AuthenticationConfig>(Configuration.GetSection("Authentication"));
 
             // https://forums.asp.net/t/2130410.aspx?Roles+and+RoleManager+in+ASP+NET+Core+2
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
@@ -145,6 +144,7 @@ namespace CDT.Cosmos.Cms.Website
                         options.ClientId = config.Google.ClientId;
                         options.ClientSecret = config.Google.ClientSecret;
                     });
+
             services.AddMvc()
                 .AddNewtonsoftJson(options =>
                     options.SerializerSettings.ContractResolver =
@@ -183,10 +183,8 @@ namespace CDT.Cosmos.Cms.Website
             }
             else
             {
-                app.UseStatusCodePagesWithReExecute("/Error/{0}");
-
-                // The default HSTS value is 30 days. You may want to change this for production scenarios,
-                // see https://aka.ms/aspnetcore-hsts.
+                app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
