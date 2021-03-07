@@ -26,14 +26,13 @@
     var userRoles = @(Html.Raw(ViewData["CCMS-RBAC"]));
 
     if (userRoles.length > 0) {
-        $(document).ready(function() {
-            $('[name="data-ccms-roles"]').each(function (index) {
-                var elem = this;
-                $(userRoles).each(function(inner) {
-                    if (elem.attr("data-ccms-roles").contains(userRoles[inner])) {
-                        elem.show();
-                    } else {
-                        elem.hide();
+        $(document).ready(function () {
+            var items = $("[data-ccms-roles]");
+            $.each(items, function (index, elem) {
+                var elementRoles = $(elem).attr("data-ccms-roles");
+                $.each(userRoles, function (inner, role) {
+                    if (elementRoles.includes(role)) {
+                        $(elem).show();
                     }
                 });
             });
