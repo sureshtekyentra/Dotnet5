@@ -124,7 +124,7 @@ namespace CDT.Cosmos.Cms.Website
             //
             // Configure authentication providers.
             //
-            if (config.Microsoft != null && !string.IsNullOrEmpty(config.Microsoft.ClientId))
+            if (config?.Microsoft != null && !string.IsNullOrEmpty(config.Microsoft.ClientId))
                 // Microsoft
                 services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
                 {
@@ -133,7 +133,7 @@ namespace CDT.Cosmos.Cms.Website
                     microsoftOptions.ClientSecret = config.Microsoft.ClientSecret;
                 });
 
-            if (config.Google != null && !string.IsNullOrEmpty(config.Google.ClientId))
+            if (config?.Google != null && !string.IsNullOrEmpty(config.Google.ClientId))
                 services.AddAuthentication()
                     .AddGoogle(options =>
                     {

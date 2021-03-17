@@ -22,8 +22,27 @@
     @Html.Raw(Model.Layout.PostFooterBlock)
 <script>
     @Html.Raw(Model.FooterJavaScript)
-    
-    var identityUser = @(Html.Raw(ViewData["RBAC"]))
+
+    var identityInfo = @(Html.Raw(ViewData["CCMS-RBAC"]));
+
+    if (identityInfo.IsAuthenticated && identityInfo.RoleMembership.length > 0) {
+        $(document).ready(function () {
+            var items = $("[data-ccms-roles]");
+            $.each(items, function (index, elem) {
+                var elementRoles = $(elem).attr("data-ccms-roles");
+                var show = false;
+                $.each(identityInfo.RoleMembership,
+                    function(inner, role) {
+                        if (elementRoles.includes(role)) {
+                            show = true;
+                        }
+                    });
+                if (show) {
+                    $(elem).show();
+                }
+            });
+        });
+    }
 
 </script>
 <!-- Comment out the following if not using Google Translate v3 -->
