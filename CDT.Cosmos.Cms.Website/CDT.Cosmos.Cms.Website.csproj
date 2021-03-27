@@ -7,8 +7,8 @@
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<StartupObject>CDT.Cosmos.Cms.Website.Program</StartupObject>
 		<RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-		<AssemblyVersion>2021.3.25.1</AssemblyVersion>
-		<FileVersion>2021.3.25.1</FileVersion>
+		<AssemblyVersion>2021.3.27.0</AssemblyVersion>
+		<FileVersion>2021.3.27.0</FileVersion>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 	</PropertyGroup>
 
@@ -17,7 +17,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CDT.Cosmos.Cms.Common" Version="2.1.5" />
+		<PackageReference Include="CDT.Cosmos.Cms.Common" Version="2.1.6" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="5.0.4" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.4" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="5.0.4" />
