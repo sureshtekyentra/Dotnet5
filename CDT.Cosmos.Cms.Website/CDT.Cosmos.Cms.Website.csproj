@@ -7,8 +7,8 @@
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<StartupObject>CDT.Cosmos.Cms.Website.Program</StartupObject>
 		<RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-		<AssemblyVersion>2021.3.27.1</AssemblyVersion>
-		<FileVersion>2021.3.27.1</FileVersion>
+		<AssemblyVersion>2021.4.7.4</AssemblyVersion>
+		<FileVersion>2021.4.7.4</FileVersion>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 	</PropertyGroup>
 
@@ -17,15 +17,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CDT.Cosmos.Cms.Common" Version="2.1.7" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="5.0.4" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.4" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="5.0.4" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="5.0.4" />
-		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.4" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.4" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.4" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.4" />
+		<PackageReference Include="CDT.Cosmos.Cms.Common" Version="2.1.9" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="5.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="5.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="5.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.5" />
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="5.0.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 	</ItemGroup>
