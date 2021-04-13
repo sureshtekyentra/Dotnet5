@@ -8,11 +8,11 @@ This is a basic layout for a C/CMS page.
 }
 @if (string.IsNullOrEmpty(Model.CacheKey))
 {
-    @Html.Raw(Model.Content)
+@Html.Raw(Model.Content)
 }
 else
 {
-    <distributed-cache name="@Model.CacheKey," expires-after="@TimeSpan.FromSeconds(Model.CacheDuration)">
-        @Html.Raw(Model.Content)
-    </distributed-cache>
+<distributed-cache name="@Model.CacheKey" expires-after="@TimeSpan.FromSeconds((int)ViewData["ExpiresSeconds"])">
+@Html.Raw(Model.Content)
+</distributed-cache>
 }
