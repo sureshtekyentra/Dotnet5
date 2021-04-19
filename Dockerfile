@@ -4,7 +4,7 @@ WORKDIR /source
 # copy csproj and restore as distinct layers
 COPY *.sln .
 COPY CDT.Cosmos.Cms.Website/*.csproj ./CDT.Cosmos.Cms.Website/
-RUN dotnet restore "CDT.Cosmos.Cms.Website/*.csproj" 
+RUN dotnet restore
 
 # copy everything else and build app
 COPY CDT.Cosmos.Cms.Website/. ./CDT.Cosmos.Cms.Website/
