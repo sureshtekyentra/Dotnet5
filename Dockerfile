@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:5.0
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS build-env
 WORKDIR /source 
 
 # copy csproj and restore as distinct layers
@@ -9,10 +9,8 @@ RUN dotnet restore "CDT.Cosmos.Cms.Website/*.csproj"
 # copy everything else and build app
 COPY CDT.Cosmos.Cms.Website/. ./CDT.Cosmos.Cms.Website/
 WORKDIR /source/CDT.Cosmos.Cms.Website
-RUN dotnet build "CDT.Cosmos.Cms.Website.csproj" -c Release -o /app
 
-FROM build AS publish  
-RUN dotnet publish "CDT.Cosmos.Cms.Website.csproj" -c Release -o /app  
+RUN dotnet publish "CDT.Cosmos.Cms.Website.csproj" --output /app/ --configuration Release 
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
