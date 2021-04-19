@@ -1,5 +1,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS build-env
 WORKDIR /source 
+RUN sudo apt -y install dotnet-sdk-5.0
 
 # copy csproj and restore as distinct layers
 COPY *.sln .
